@@ -31,6 +31,7 @@ services:
       # See https://docs.confluent.io/kafka/operations-tools/kafka-tools.html#kafka-storage-sh
       CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
       KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: 'localhost:8081'
+      KAFKA_CONFLUENT_CLUSTER_LINK_METADATA_TOPIC_REPLICATION_FACTOR: 1
 
   schema-registry:
     image: confluentinc/cp-schema-registry:7.5.0
@@ -47,6 +48,7 @@ services:
 
   connect:
     image: cnfldemos/cp-server-connect-datagen:0.6.2-7.5.0
+    #profiles: [debug]
     hostname: connect
     container_name: connect
     depends_on:
@@ -77,6 +79,7 @@ services:
 
   control-center:
     image: confluentinc/cp-enterprise-control-center:7.5.0
+    #profiles: [debug]
     hostname: control-center
     container_name: control-center
     depends_on:
@@ -101,6 +104,7 @@ services:
 
   ksqldb-server:
     image: confluentinc/cp-ksqldb-server:7.5.0
+    #profiles: [debug]
     hostname: ksqldb-server
     container_name: ksqldb-server
     depends_on:
@@ -124,6 +128,7 @@ services:
 
   ksqldb-cli:
     image: confluentinc/cp-ksqldb-cli:7.5.0
+    profiles: [debug]
     container_name: ksqldb-cli
     depends_on:
       - broker
@@ -134,6 +139,7 @@ services:
 
   ksql-datagen:
     image: confluentinc/ksqldb-examples:7.5.0
+    profiles: [debug]
     hostname: ksql-datagen
     container_name: ksql-datagen
     depends_on:
