@@ -2,6 +2,45 @@
 
 A tutorial on how to use Confluent Schema registry, from local infrastructure to Confluent Cloud.
 
+A key conceptual aspect I'll address first is how the Schema Subject, Schema ID and Schema Version works. Why? Because the existing documentation is unclear, to me at least. 
+
+Some practical aspects I'll focus on:
+
+1. Starting up the Docker images we need for the exercises - and nothing else
+2. Getting to grips with  
+
+## Schema Subject, Schema ID and Schema Version
+
+When you are getting started, chances are high, in my opinion, that you'll do the following and may get confused, like I did:
+
+- Upload a schema for a given subject
+- Notice **Schema ID 1** and **Schema Version 1** returned
+- Add a field to the schema for the same subject
+- Notice **Schema ID 2** and **Schema Version 2** returned
+
+The question becomes, wait, why have a Schema ID AND Schema Version when they are identical? It makes no sense.
+
+### The Schema ID is a Global Technical Construct, Schema Version is Subject Specific
+
+The answer is that, in my opinion, the naming in the Schema Registry is suboptimal. This is what should be returned for clarity:
+
+- Upload a schema for a given subject
+- Notice **Global Schema Hashtable Value (GSHV) 1** and **Subject Schema Version 1** returned
+- Add a field to the schema for the same subject
+- Notice **Global Schema Hashtable Value (GSHV) 2** and **Subject Schema Version 2** returned
+
+Basically, Confluent Schema Registry conceptually does something technical which is to take the MD5 hash of the textual representation 
+of the schema to come of with a **Global** hash which serves as a hash table key. If it is found then an attribute of the entry is the
+**Global Schema Hashtable Value X**, if not then an entry gets inserted into the hashtable.
+
+So, always remember that the **Schema ID** is shared (aka Global) and it is the true identifier for a schema. The **Schema Version** is in effect used to communicate change outside the scope of the registry, it is a **potential** call to action for both the producer and consumer for a given subject.
+
+I say **potential** call to action because the compatibility setting of the subject determines whether the producer, consumer or both need to change when a schema change gets rolled out.
+
+### References
+
+See [this explanation on StackOverflow](https://stackoverflow.com/a/62010955/433900).
+
 ## cURL
 
 In this tutorial we use the Confluent REST Proxy which provides a RESTful interface to an Apache Kafka® cluster.
@@ -16,7 +55,16 @@ We also use the Confluent Schema Registry API.
 
 https://docs.confluent.io/platform/current/schema-registry/develop/api.html
 
-### Steps
+### Prove It Locally With cURL
+
+You might not want to sign up for Confluent Cloud just to experiment with the Schema Registry. 
+
+In this section I provide the commands that you and I can use to satisfy ourselves that the Schema ID is a global technical construct 
+and that the schema version is subject specific.
+
+TODO finish me
+
+### Other Steps
 
 Get the current mode for Schema Registry at global level.
 
