@@ -3,13 +3,15 @@
 # 
 # Modifications:
 # 1. CHANGE: The broker, schema-registry and rest-proxy require the all profile flag to run up. With this if you want to run up all services do so as follows.
-#    $ docker compose --profile debug up
+#    $ docker compose --profile all up
 #    To run the three services up use either of these options, daemon mode (-d) may be better in the long run.
 #    $ docker-compose up
 #    $ docker-compose up -d 
 #    Why: We are only using these components in the tutorial.
 # 2. CHANGE: Added the following to the broker environment: KAFKA_CONFLUENT_CLUSTER_LINK_METADATA_TOPIC_REPLICATION_FACTOR: 1
 #    Why: Incessant complaints in the logs which I noticed and that I found to be an unnecessary districation.
+#
+# NOTE: after a while the cp-server instance dies.
 version: '2'
 services:
 

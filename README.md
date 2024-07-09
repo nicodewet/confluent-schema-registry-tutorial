@@ -41,7 +41,16 @@ I say **potential** call to action because the compatibility setting of the subj
 
 See [this explanation on StackOverflow](https://stackoverflow.com/a/62010955/433900).
 
-## cURL
+### Prove It Locally With cURL and Docker Compose
+
+You might not want to sign up for Confluent Cloud just to experiment with the Schema Registry. 
+
+In this section I provide the commands that you and I can use to satisfy ourselves that the Schema ID is a global technical construct 
+and that the schema version is subject specific.
+
+
+
+## Broader Schema Registry Experimentation With cURL
 
 In this tutorial we use the Confluent REST Proxy which provides a RESTful interface to an Apache Kafka® cluster.
 
@@ -54,15 +63,6 @@ https://docs.confluent.io/platform/current/kafka-rest/api.html#crest-api-v3
 We also use the Confluent Schema Registry API.
 
 https://docs.confluent.io/platform/current/schema-registry/develop/api.html
-
-### Prove It Locally With cURL
-
-You might not want to sign up for Confluent Cloud just to experiment with the Schema Registry. 
-
-In this section I provide the commands that you and I can use to satisfy ourselves that the Schema ID is a global technical construct 
-and that the schema version is subject specific.
-
-TODO finish me
 
 ### Other Steps
 
@@ -100,21 +100,28 @@ Create transactions topic using the AdminClient functionality of the REST Proxy 
      "http://localhost:8082/v3/clusters/${KAFKA_CLUSTER_ID}/topics" | jq .
 ```
 
+Delete topic (because we'll keep on using the same topic name):
+
+```
+% curl -X DELETE http://localhost:8082/v3/clusters/${KAFKA_CLUSTER_ID}/topics/transactions
+```
+
 Check whether you can create a topic with key and value schema validation:
 
 ```
-% curl -X POST -H "Content-Type: application/json" \             
-     --data '{
-               "topic_name": "transactions",
-               "partitions_count": 1,
-               "replication_factor": 1,
-               "configs": [
-                 {"name": "cleanup.policy", "value": "compact"},
-                 {"name": "confluent.value.schema.validation", "value": "true"},
-                 {"name": "confluent.key.schema.validation", "value": "true"}
-               ]
-             }' \
-     http://localhost:8082/v3/clusters/${KAFKA_CLUSTER_ID}/topics | jq .
+% curl -X POST -H "Content-Type: application/json" http://localhost:8082/v3/clusters/${KAFKA_CLUSTER_ID}/topics \
+--data-binary @- << EOF    
+{
+  "topic_name": "transactions",
+  "partitions_count": 1,
+  "replication_factor": 1,
+  "configs": [
+    {"name": "cleanup.policy", "value": "compact"},
+    {"name": "confluent.value.schema.validation", "value": "true"},
+    {"name": "confluent.key.schema.validation", "value": "true"}
+  ]
+}
+EOF
 ```
 
 The above command will only succeed if you are using the Confluent Server image (confluentinc/cp-server), not Apache Kafka (confluentinc/cp-kafka). 
